@@ -1,0 +1,41 @@
+# yunsu.conf — 云速 VPS 网络优化 配置样例
+# 复制为同目录 yunsu.conf 并填本机参数; 密码文件路径可指向任意本地文件
+
+# --- 1. 服务端(VPS, 跑 sing-box hyst2) ---
+H2N_SSH_HOST="139.28.232.33"
+H2N_SSH_PORT="23528"
+H2N_SSH_KEY="/root/.ssh/3xui_139.28.232.33_ed25519"
+H2N_SSH_USER="root"
+H2N_SSH_BIN="ssh"
+
+# --- 2. 测试床(同机房邻居机, 做隧道吞吐基准) ---
+# 没有测试床时留空, 所有 --apply 前自动跳过测速(仅做静态安装+sysctl), 仍可用 --bench-remote 手动补
+H2N_TB_HOST="45.62.110.201"
+H2N_TB_PORT="5004"
+H2N_TB_KEY="/root/.ssh/id_ed25519"
+H2N_TB_USER="root"
+
+# --- 3. hyst2 服务端参数 ---
+H2N_H2_PORT="57689"            # UDP
+H2N_H2_DOMAIN="pjy.taoque.top"
+H2N_H2_CERT_DIR="/opt/ldnmp/certs/live/pjy.taoque.top"   # acme.sh 全链证书目录
+H2N_H2_BBR_PROFILE="standard" # standard 实测最优; aggressive 单核更抖(见T3)
+H2N_H2_MASQUERADE="https://www.youtube.com/"
+H2N_H2_PASSWORD_FILE="/root/.hermes/cache/scratch/netopt-139/h2pw"  # 密码放本地文件, 永不落 conf/日志/远端明文
+H2N_H2_LOG_LEVEL="info"
+
+# --- 4. sysctl 持久化层(安全顺序: 备份→写90-conf→语法检查→sysctl -p 只加载自己→逐项验证→失败回滚) ---
+H2N_SYSCTL_CONF="/etc/sysctl.d/90-hyst2-netopt.conf"   # 只动这一个文件
+H2N_SYSCTL_MARKER="# BEGIN hyst2-netopt"
+
+# --- 5. 测试床参数(可复现调优) ---
+H2N_TB_PROXY_PORT="7890"      # 测试床本地代理口
+H2N_TB_FILESERV_PORT="8890"   # 服务端临时文件服务口(ufw 只放行测试床 IP, 测完即拆)
+H2N_TB_FILE_MB="200"         # 测试文件大小
+H2N_TB_TEST_MB="100"         # 单流测速取 100MB(50MB 短测有连接预热误差)
+H2N_TB_RUNS="3"              # 单流轮数
+H2N_TB_CONCURRENCY="4"       # 并发组数
+
+# --- 6. 本地代理口(本机 38 也走这条隧道时用, 可选) ---
+H2N_LOCAL_PROXY_PORT="7890"
+H2N_TLS_ENABLED="1"   # 1=acme证书+域名; 0=自签/无TLS(不推荐)
