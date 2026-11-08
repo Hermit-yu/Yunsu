@@ -25,7 +25,7 @@ H2N_H2_PASSWORD_FILE="/root/.hermes/cache/scratch/netopt-139/h2pw"  # 密码放�
 H2N_H2_LOG_LEVEL="info"
 
 # --- 4. sysctl 持久化层(安全顺序: 备份→写90-conf→语法检查→sysctl -p 只加载自己→逐项验证→失败回滚) ---
-H2N_SYSCTL_CONF="/etc/sysctl.d/90-hyst2-netopt.conf"   # 只动这一个文件
+H2N_SYSCTL_CONF="/etc/sysctl.d/90-netopt.conf"   # 单一优化文件(标记块管理, 不再另建)
 H2N_SYSCTL_MARKER="# BEGIN hyst2-netopt"
 
 # --- 5. 测试床参数(可复现调优) ---
